@@ -1,4 +1,6 @@
+import { services } from '../../assets/iconServices.js';
 import { Hotel } from '../../models/hotelModel/hotel.model.js';
+import { PhotosHotel } from '../../models/hotelModel/photosHotel.model.js';
 import { ServicesHotel } from '../../models/hotelModel/servicesHotel.model.js';
 import { catchAsync } from '../../utils/catchAsync.js';
 import axios from 'axios';
@@ -26,6 +28,7 @@ export const findAllHotelsPartner = catchAsync(async (req, res, next) => {
       partnerId: partner.id,
       // status: 'active',
     },
+    include: [{ model: PhotosHotel }],
   });
 
   return res.status(200).json({
@@ -48,51 +51,52 @@ export const create = catchAsync(async (req, res, next) => {
   const { partner } = req;
   const {
     name,
+    stars,
     description,
     country,
     city,
-    reference,
-    locationName,
+    postalCode,
+    address,
     coordinatesLatitude,
     coordinatesLength,
   } = req.body;
-  const imageFile = req.file;
 
-  const formDataImg = new FormData();
-  formDataImg.append('image', imageFile.buffer, {
-    filename: imageFile.originalname,
-  });
+  const ImagesFiles = req.files['linkImg'];
 
-  const urlPost = `${process.env.SERVER_IMAGE}/image`;
-  const responseImage = await axios.post(urlPost, formDataImg);
-  const { imagePath } = responseImage.data;
+  const createdPhotosHotel = [];
 
   const hotel = await Hotel.create({
     partnerId: partner.id,
     name,
+    stars,
+    description,
     country,
     city,
-    description,
-    reference,
-    locationName,
+    postalCode,
+    address,
     coordinatesLatitude,
     coordinatesLength,
-    principalImage: imagePath,
   });
 
-  // Crear servicios para el hotel
-  const services = [
-    { name: 'Restaurante', IconSvg: 'restaurant.svg' },
-    { name: 'Bar / Cafetería', IconSvg: 'bar.svg' },
-    { name: 'Alojamiento', IconSvg: 'accommodation.svg' },
-    { name: 'Parking privado', IconSvg: 'parking.svg' },
-    { name: 'Área de trabajo', IconSvg: 'jobs.svg' },
-    { name: 'Piscina interior', IconSvg: 'pool.svg' },
-    { name: 'Vista a la playa', IconSvg: 'beach.svg' },
-    { name: 'Jardín', IconSvg: 'garden.svg' },
-    { name: 'Área para ciclistas', IconSvg: 'cyclists.svg' },
-    { name: 'Wifi gratis', IconSvg: 'wifi.svg' },
-  ];
+  const ImagesPromises = ImagesFiles.map(async (file) => {
+    const formDataImg = new FormData();
+    formDataImg.append('image', file.buffer, {
+      filename: file.originalname,
+    });
+    const urlPost = `${process.env.SERVER_IMAGE}/image`;
+
+    const responseImage = await axios.post(urlPost, formDataImg);
+    const { imagePath } = responseImage.data;
+
+    const photosHotel = await PhotosHotel.create({
+      hotelId: hotel.id,
+      linkImg: imagePath,
+    });
+
+    createdPhotosHotel.push(photosHotel);
+  });
+
+  await Promise.all(ImagesPromises);
 
   const servicePromises = services.map((service) => {
     return ServicesHotel.create({
@@ -108,6 +112,7 @@ export const create = catchAsync(async (req, res, next) => {
     status: 'success',
     message: 'El hotel se creó exitosamente',
     hotel,
+    createdPhotosHotel,
   });
 });
 

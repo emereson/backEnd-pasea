@@ -11,6 +11,7 @@ import { partnerRouter } from './routes/partner.routes.js';
 import { AppError } from './utils/AppError.js';
 import { hotelRouter } from './routes/hotelRoutes/hotel.routes.js';
 import { dayPassRouter } from './routes/hotelRoutes/dayPassRoutes/dayPass.routes.js';
+import { roomRouter } from './routes/hotelRoutes/room.routes.js';
 
 const app = express();
 app.use(express.json());
@@ -30,11 +31,16 @@ app.use('/api/v1', limiter);
 app.use('/api/v1/user', usersRouter);
 
 app.use('/api/v1/partner', partnerRouter);
+
+// hotel
 app.use('/api/v1/hotel', hotelRouter);
+app.use('/api/v1/room', roomRouter);
 app.use('/api/v1/dayPass', dayPassRouter);
 
 app.all('*', (req, res, next) => {
-  return next(new AppError(`Can't find ${req.originalUrl} on this seerver! 💀`, 404));
+  return next(
+    new AppError(`Can't find ${req.originalUrl} on this seerver! 💀`, 404)
+  );
 });
 
 app.use(globalErrorHandler);

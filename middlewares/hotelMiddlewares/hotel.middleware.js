@@ -1,5 +1,7 @@
 import { DayPass } from '../../models/hotelModel/daypassModel/dayPass.model.js';
 import { Hotel } from '../../models/hotelModel/hotel.model.js';
+import { PhotosHotel } from '../../models/hotelModel/photosHotel.model.js';
+import { Room } from '../../models/hotelModel/room.model.js';
 import { ServicesHotel } from '../../models/hotelModel/servicesHotel.model.js';
 import { AppError } from '../../utils/AppError.js';
 import { catchAsync } from '../../utils/catchAsync.js';
@@ -36,6 +38,12 @@ export const validExistHotelIncluids = catchAsync(async (req, res, next) => {
       },
       {
         model: DayPass,
+      },
+      {
+        model: PhotosHotel,
+      },
+      {
+        model: Room,
       },
     ],
   });

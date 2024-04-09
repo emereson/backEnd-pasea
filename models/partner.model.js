@@ -1,12 +1,12 @@
-import { DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
 import { db } from '../config/db.config.js';
 
 const Partner = db.define('partner', {
   id: {
     primaryKey: true,
-    autoIncrement: true,
     allowNull: false,
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
+    defaultValue: Sequelize.UUIDV4,
   },
   name: {
     type: DataTypes.STRING,
@@ -16,7 +16,6 @@ const Partner = db.define('partner', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-
   ruc: {
     type: DataTypes.STRING,
     unique: true,

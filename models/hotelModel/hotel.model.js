@@ -1,22 +1,22 @@
-import { DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
 import { db } from '../../config/db.config.js';
 
 const Hotel = db.define('hotel', {
   id: {
     primaryKey: true,
-    autoIncrement: true,
     allowNull: false,
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
+    defaultValue: Sequelize.UUIDV4,
   },
   partnerId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  principalImage: {
-    type: DataTypes.TEXT,
+    type: DataTypes.UUID,
     allowNull: false,
   },
   name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  stars: {
     type: DataTypes.STRING,
     allowNull: false,
   },
@@ -24,14 +24,7 @@ const Hotel = db.define('hotel', {
     type: DataTypes.TEXT,
     allowNull: false,
   },
-  reference: {
-    type: DataTypes.TEXT,
-    allowNull: false,
-  },
-  locationName: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
+
   country: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -40,7 +33,15 @@ const Hotel = db.define('hotel', {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  postalCode: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
 
+  address: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
   coordinatesLatitude: {
     type: DataTypes.TEXT,
     allowNull: false,

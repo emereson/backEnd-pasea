@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
-import { db } from '../../../config/db.config.js';
+import { db } from '../../config/db.config.js';
 
-const DayPass = db.define('dayPass', {
+const PhotosHotel = db.define('photosHotel', {
   id: {
     primaryKey: true,
     autoIncrement: true,
@@ -12,10 +12,10 @@ const DayPass = db.define('dayPass', {
     type: DataTypes.UUID,
     allowNull: false,
   },
-  name: {
+  linkImg: {
     type: DataTypes.STRING,
     allowNull: false,
   },
 });
 
-export { DayPass };
+export { PhotosHotel };

@@ -1,25 +1,21 @@
 import { DataTypes } from 'sequelize';
 import { db } from '../../../config/db.config.js';
 
-const DetailsDayPass = db.define('detailsDayPass', {
+const ImagesDayPass = db.define('imagesDayPass', {
   id: {
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
     type: DataTypes.INTEGER,
   },
-  dayPassId: {
+  dayPassiD: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  idIcon: {
+  linkImg: {
     type: DataTypes.STRING,
     allowNull: false,
   },
 });
 
-export { DetailsDayPass };
+export { ImagesDayPass };

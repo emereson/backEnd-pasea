@@ -29,7 +29,7 @@ router.patch('/service/:serviceId', hotelController.updateService);
 
 router.post(
   '/partner/:partnerId',
-  upload.single('linkImg'),
+  upload.fields([{ name: 'linkImg', maxCount: 6 }]),
   partnerMiddleware.validExistPart,
   authPartnerMidlleware.protectAccountOwner,
   hotelController.create

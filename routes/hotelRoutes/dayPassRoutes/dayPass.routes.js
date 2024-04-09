@@ -25,7 +25,7 @@ router.get(
 
 router.post(
   '/partner/:partnerId/hotel/:hotelId',
-  upload.single('linkImg'),
+  upload.fields([{ name: 'linkImg', maxCount: 6 }]),
   partnerMiddleware.validExistPart,
   authPartnerMidlleware.protectAccountOwner,
   hotelMiddleware.validExistHotel,

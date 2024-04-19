@@ -1,21 +1,21 @@
 import { DataTypes } from 'sequelize';
 import { db } from '../../../config/db.config.js';
 
-const AccommodationImage = db.define('accommodationImage', {
+const ImagesAccommodation = db.define('imagesAccommodation', {
   id: {
     primaryKey: true,
     autoIncrement: true,
     allowNull: false,
     type: DataTypes.INTEGER,
   },
-  accommodationsId: {
+  accommodationId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  linkImage: {
+  linkImg: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
 });
 
-export { AccommodationImage };
+export { ImagesAccommodation };

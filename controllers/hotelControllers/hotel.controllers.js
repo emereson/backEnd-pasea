@@ -1,4 +1,3 @@
-import { services } from '../../assets/iconServices.js';
 import { Hotel } from '../../models/hotelModel/hotel.model.js';
 import { PhotosHotel } from '../../models/hotelModel/photosHotel.model.js';
 import { ServicesHotel } from '../../models/hotelModel/servicesHotel.model.js';
@@ -59,6 +58,7 @@ export const create = catchAsync(async (req, res, next) => {
     address,
     coordinatesLatitude,
     coordinatesLength,
+    services,
   } = req.body;
 
   const ImagesFiles = req.files['linkImg'];
@@ -97,12 +97,15 @@ export const create = catchAsync(async (req, res, next) => {
   });
 
   await Promise.all(ImagesPromises);
+  const jsonServices = JSON.parse(services);
+  console.log(jsonServices);
 
-  const servicePromises = services.map((service) => {
+  const servicePromises = jsonServices.map((service) => {
     return ServicesHotel.create({
       hotelId: hotel.id,
       name: service.name,
-      IconSvg: service.IconSvg,
+      iconSvg: service.iconSvg,
+      status: service.status,
     });
   });
 

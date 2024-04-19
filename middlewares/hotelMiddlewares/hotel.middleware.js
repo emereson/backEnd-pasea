@@ -1,3 +1,4 @@
+import { Accommodation } from '../../models/hotelModel/accommodationModel/accommodation.model.js';
 import { DayPass } from '../../models/hotelModel/daypassModel/dayPass.model.js';
 import { Hotel } from '../../models/hotelModel/hotel.model.js';
 import { PhotosHotel } from '../../models/hotelModel/photosHotel.model.js';
@@ -45,6 +46,7 @@ export const validExistHotelIncluids = catchAsync(async (req, res, next) => {
       {
         model: Room,
       },
+      { model: Accommodation },
     ],
   });
 

@@ -8,7 +8,7 @@ const ImagesDayPass = db.define('imagesDayPass', {
     allowNull: false,
     type: DataTypes.INTEGER,
   },
-  dayPassiD: {
+  dayPassId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },

@@ -1,4 +1,3 @@
-import { json } from 'sequelize';
 import { DayPass } from '../../../models/hotelModel/daypassModel/dayPass.model.js';
 import { ImagesDayPass } from '../../../models/hotelModel/daypassModel/imagesDayPass.model.js';
 import { catchAsync } from '../../../utils/catchAsync.js';
@@ -6,16 +5,51 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { PackageDayPass } from '../../../models/hotelModel/daypassModel/packageDayPass.model.js';
 import { ServicePackagesDayPass } from '../../../models/hotelModel/daypassModel/servicePackagesDayPass.model.js';
+import { Hotel } from '../../../models/hotelModel/hotel.model.js';
+import { Op } from 'sequelize';
 
 export const findAll = catchAsync(async (req, res, next) => {
-  const daysPass = await DayPass.findAll({
-    where: {},
+  const { search } = req.query;
+  let whereCondition = {}; // Declarar la variable fuera del bloque if
+
+  if (search !== '') {
+    whereCondition = {
+      [Op.or]: [
+        { name: { [Op.iLike]: `%${search}%` } },
+        { '$hotel.name$': { [Op.iLike]: `%${search}%` } },
+        { '$hotel.description$': { [Op.iLike]: `%${search}%` } },
+        { '$hotel.country$': { [Op.iLike]: `%${search}%` } },
+        { '$hotel.city$': { [Op.iLike]: `%${search}%` } },
+        { '$hotel.address$': { [Op.iLike]: `%${search}%` } },
+      ],
+    };
+  }
+
+  const daysPasses = await DayPass.findAll({
+    where: whereCondition, // Usar la variable donde se almacena la condición where
+    include: [
+      {
+        model: PackageDayPass,
+        required: true,
+        include: [
+          {
+            model: ServicePackagesDayPass,
+            where: { status: 'active' },
+          },
+        ],
+      },
+      { model: ImagesDayPass },
+      {
+        model: Hotel,
+        required: true,
+      },
+    ],
   });
 
   return res.status(200).json({
     status: 'Success',
-    results: daysPass.length,
-    daysPass,
+    results: daysPasses.length,
+    daysPasses,
   });
 });
 
@@ -23,6 +57,18 @@ export const findAllIdHotel = catchAsync(async (req, res, next) => {
   const { hotel } = req;
   const daysPass = await DayPass.findAll({
     where: { hotelId: hotel.id },
+    include: [
+      { model: ImagesDayPass },
+      {
+        model: PackageDayPass,
+        include: [
+          {
+            model: ServicePackagesDayPass,
+            where: { status: 'active' }, // Filtra los ServicePackagesDayPass con estado activo
+          },
+        ],
+      },
+    ],
   });
 
   return res.status(200).json({
@@ -65,14 +111,14 @@ export const create = catchAsync(async (req, res, next) => {
     const responseImage = await axios.post(urlPost, formDataImg);
     const { imagePath } = responseImage.data;
     const imagesDayPass = await ImagesDayPass.create({
-      dayPassiD: dayPass.id,
+      dayPassId: dayPass.id,
       linkImg: imagePath,
     });
     createdPhotosDayPass.push(imagesDayPass);
   });
 
   const packageDayPass = await PackageDayPass.create({
-    dayPassiD: dayPass.id,
+    dayPassId: dayPass.id,
     name: jsonDataPackage.name,
     typeRoom: jsonDataPackage.typeRoom,
     startTimetable1: jsonDataPackage.startTimetable1,
@@ -90,7 +136,7 @@ export const create = catchAsync(async (req, res, next) => {
       await ServicePackagesDayPass.create({
         packageDayPassId: packageDayPass.id,
         name: services.name,
-        iconSvg: services.IconSvg,
+        iconSvg: services.iconSvg,
         status: services.status,
       })
   );
@@ -152,9 +198,19 @@ export const update = catchAsync(async (req, res) => {
 
 export const deleteElement = catchAsync(async (req, res) => {
   const { dayPass } = req;
-  const imageName = dayPass.principalImage.split('/').pop();
 
-  await axios.delete(`${process.env.SERVER_IMAGE}/delete-image/${imageName}`);
+  const imagesAll = await ImagesDayPass.findAll({
+    where: {
+      dayPassId: dayPass.id,
+    },
+  });
+
+  const deleteImagePromises = imagesAll.map(async (image) => {
+    const imageName = image.linkImg.split('/').pop();
+    await axios.delete(`${process.env.SERVER_IMAGE}/delete-image/${imageName}`);
+  });
+
+  await Promise.all(deleteImagePromises);
 
   await dayPass.destroy();
 

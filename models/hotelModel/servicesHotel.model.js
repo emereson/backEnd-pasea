@@ -16,7 +16,7 @@ const ServicesHotel = db.define('servicesHotel', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  IconSvg: {
+  iconSvg: {
     type: DataTypes.STRING,
     allowNull: false,
   },

@@ -1,6 +1,6 @@
 import express from 'express';
-import * as dayPassController from '../../../controllers/hotelControllers/daypassControllers/daypass.controllers.js';
-import * as dayPassMiddleware from '../../../middlewares/hotelMiddlewares/dayPassMiddlewares/dayPass.middleware.js';
+import * as accommodationController from '../../../controllers/hotelControllers/accommodationControllers/accommodation.controllers.js';
+import * as accommodationMiddleware from '../../../middlewares/hotelMiddlewares/accommodationMiddleware/accommodation.middleware.js';
 
 import * as hotelMiddleware from '../../../middlewares/hotelMiddlewares/hotel.middleware.js';
 import * as partnerMiddleware from '../../../middlewares/partner.middleware.js';
@@ -10,11 +10,11 @@ import { upload } from '../../../utils/multer.js';
 
 const router = express.Router();
 
-router.get('/', dayPassController.findAll);
+router.get('/', accommodationController.findAll);
 router.get(
   '/:id',
-  dayPassMiddleware.validExistDayPassIncluid,
-  dayPassController.findOne
+  accommodationMiddleware.validExistAccommodationIncluid,
+  accommodationController.findOne
 );
 
 router.use(authPartnerMidlleware.protect);
@@ -23,15 +23,15 @@ router.get(
   partnerMiddleware.validExistPart,
   authPartnerMidlleware.protectAccountOwner,
   hotelMiddleware.validExistHotel,
-  dayPassController.findAllIdHotel
+  accommodationController.findAllIdHotel
 );
 
 router.get(
   '/partner/:partnerId/:id',
   partnerMiddleware.validExistPart,
   authPartnerMidlleware.protectAccountOwner,
-  dayPassMiddleware.validExistDayPassIncluid,
-  dayPassController.findOne
+  accommodationMiddleware.validExistAccommodationIncluid,
+  accommodationController.findOne
 );
 
 router.post(
@@ -40,13 +40,19 @@ router.post(
   partnerMiddleware.validExistPart,
   authPartnerMidlleware.protectAccountOwner,
   hotelMiddleware.validExistHotel,
-  dayPassController.create
+  accommodationController.create
 );
 router
   .route('/:id')
-  .patch(dayPassMiddleware.validExistDayPass, dayPassController.update)
-  .delete(dayPassMiddleware.validExistDayPass, dayPassController.deleteElement);
+  .patch(
+    accommodationMiddleware.validExistAccommodation,
+    accommodationController.update
+  )
+  .delete(
+    accommodationMiddleware.validExistAccommodation,
+    accommodationController.deleteElement
+  );
 
-const dayPassRouter = router;
+const accommodationRouter = router;
 
-export { dayPassRouter };
+export { accommodationRouter };

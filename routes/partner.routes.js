@@ -6,12 +6,20 @@ import * as authPartnerMidlleware from '../middlewares/authPartner.middleware.js
 
 const router = express.Router();
 
-router.post('/signup', validationMiddleware.createUser, partnerController.signup);
+router.post(
+  '/signup',
+  validationMiddleware.createUser,
+  partnerController.signup
+);
 router.post('/login', validationMiddleware.loginUser, partnerController.login);
 router.get('/email', partnerController.verificateExistEmail);
-router.post('/active/:id', partnerMiddleware.validExistPartDisble, partnerController.activePartner);
+router.post(
+  '/active/:id',
+  partnerMiddleware.validExistPartDisble,
+  partnerController.activePartner
+);
 
-router.use(authPartnerMidlleware.protectAccountOwner, authPartnerMidlleware.protect);
+router.use(authPartnerMidlleware.protect);
 router.post(
   '/active-patner',
   partnerMiddleware.validExistPartDisble,
